@@ -1,0 +1,21 @@
+# Sensitive files
+.env
+*.env
+
+# Supabase keys / service accounts
+supabase/*.json
+
+# Private client data
+clients/*/data/*
+clients/*/config.json
+
+# Virtual environment
+venv/
+
+# System files
+__pycache__/
+*.pyc
+.DS_Store
+
+# Node stuff (when you build frontend)
+frontend/node_modules/
