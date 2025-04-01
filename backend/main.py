@@ -42,7 +42,7 @@ async def chat(msg: Message):
 
     try:
         res = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo", #model="gpt-4" or model="gpt-4-1106-preview" is what we use once we get our hands on the OpenAI API Key
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_msg}
