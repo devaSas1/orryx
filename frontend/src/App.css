@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+
+.app {
+  text-align: center;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  background-color: #1a1a1a;
+  min-height: 100vh;
+}
+
+.chat-container {
+  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: #2a2a2a;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
