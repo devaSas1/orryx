@@ -2,3 +2,8 @@ fastapi
 uvicorn
 openai
 python-dotenv
+PyPDF2
+langchain
+tiktoken
+faiss-cpu
+langchain-openai
