@@ -33,17 +33,48 @@ with open("../clients/poway/config.json") as f:
 # === Load FAISS vectorstore ===
 VECTOR_DIR = "../clients/poway/data"
 embedding_model = OpenAIEmbeddings()
-vectorstore = FAISS.load_local(
-    VECTOR_DIR,
-    embedding_model,
-    allow_dangerous_deserialization=True
-)
+#vectorstore = FAISS.load_local(
+#    VECTOR_DIR,
+#    embedding_model,
+#    allow_dangerous_deserialization=True
+#)
+
+
+import json
+from langchain.schema import Document
+from langchain.vectorstores import FAISS  # ✅ still using FAISS for retrieval
+
+
+
+def load_dynamic_knowledge_base(path):
+    with open(path, "r", encoding="utf-8") as f:
+        print("🔍 Raw JSON content:", f.read())  # NEW
+        f.seek(0)  # Reset file pointer for json.load()
+        data = json.load(f)
+
+    docs = []
+    for item in data:
+        question = item.get("question", "")
+        answer = item.get("answer", "")
+        if question and answer:
+            combined = f"{question} {answer}"
+            docs.append(Document(page_content=combined))
+    return docs
+
+
+documents = load_dynamic_knowledge_base("../clients/poway/data/poway_knowledge_base_structured.json")
+
+for i, doc in enumerate(documents):
+    print(f"Doc {i+1} content:", doc.page_content[:200])  # Preview first 200 chars
+
+vectorstore = FAISS.from_documents(documents, embedding_model)
+
 
 # === Initialize LangChain-compatible LLM ===
 # llm = openai.ChatCompletion  # ❌ OLD: Not compatible with LangChain
 llm = ChatOpenAI(  # ✅ NEW: LangChain-native LLM wrapper
     model_name="gpt-3.5-turbo",
-    temperature=0.7, #More fluid and natural responses :D
+    temperature=0.4, #More fluid and natural responses :D
     openai_api_key=os.getenv("OPENAI_API_KEY")
 )
 

@@ -1,32 +1,118 @@
-.orryx-widget-container {
+/* Make widget button float bottom-right and stay visible */
+.orryx-toggle-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 9999;
-  }
-  
-  .orryx-toggle-button {
     background-color: #2e6d94;
-    border: none;
     color: white;
+    border: none;
     border-radius: 50%;
-    font-size: 1.5rem;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease;
   }
   
+  .orryx-toggle-button:hover {
+    background-color: #215371;
+  }
+  
+  /* Chat window shell */
   .orryx-widget-window {
-    width: 350px;
-    height: 500px;
-    background-color: #1e1e1e;
-    border-radius: 12px;
-    overflow: hidden;
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 360px;
+    max-width: 95vw;
+    max-height: 75vh;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    margin-top: 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    animation: slideUpFade 0.3s ease-out forwards;
+  }
+  
+  /* Smooth fade + slide */
+  @keyframes slideUpFade {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Ensure input stays usable on small screens */
+  .input-form input,
+  .input-form button {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+  
+  /* Responsive design fix */
+  @media screen and (max-width: 480px) {
+    .orryx-widget-window {
+      width: 95vw;
+      height: 70vh;
+      right: 10px;
+      bottom: 80px;
+    }
+  
+    .orryx-toggle-button {
+      bottom: 10px;
+      right: 10px;
+      width: 52px;
+      height: 52px;
+      font-size: 20px;
+    }
+  }
+  
+  .orryx-prompt-bubble {
+    position: fixed;
+    bottom: 90px;
+    right: 90px;
+    background-color: #2a2a2a;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    max-width: 240px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 999;
+    animation: fadeInPrompt 0.3s ease-out, fadeOutPrompt 0.3s ease-in 4.7s;
+  }
+  
+  @keyframes fadeInPrompt {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes fadeOutPrompt {
+    to { opacity: 0; transform: translateY(-10px); }
+  }
+  
+  .chat-link {
+    color: #4ea0f0;
+    text-decoration: underline;
+    word-break: break-word;
+  }
+  
+  .chat-link:hover {
+    color: #82caff;
+  }
+  
+  .chat-link {
+    color: #4aa6ff;
+    text-decoration: underline;
+    word-break: break-word;
   }
   
