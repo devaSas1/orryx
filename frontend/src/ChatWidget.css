@@ -1,0 +1,32 @@
+.orryx-widget-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
+  
+  .orryx-toggle-button {
+    background-color: #2e6d94;
+    border: none;
+    color: white;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  
+  .orryx-widget-window {
+    width: 350px;
+    height: 500px;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    margin-top: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+  

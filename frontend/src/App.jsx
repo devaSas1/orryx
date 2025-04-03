@@ -1,56 +1,13 @@
-import { useState } from 'react'
 import './App.css'
+import ChatWidget from './ChatWidget' // ✅ NEW: Bring in your widget
 
 function App() {
-  const [messages, setMessages] = useState([])
-  const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!input.trim()) return
-
-    const userMsg = { sender: 'user', text: input }
-    setMessages(prev => [...prev, userMsg])
-    setInput('')
-    setLoading(true)
-
-    try {
-      const res = await fetch('http://localhost:8000/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
-      })
-      const data = await res.json()
-      const botMsg = { sender: 'orryx', text: data.reply }
-      setMessages(prev => [...prev, botMsg])
-    } catch (err) {
-      console.error('Error:', err)
-      setMessages(prev => [...prev, { sender: 'orryx', text: "Something broke. Blame the dev." }])
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
-    <div className="chat-container">
-      <h1 className="title">💬 Orryx</h1>
-      <div className="chat-box">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`message ${msg.sender}`}>
-            <strong>{msg.sender === 'user' ? 'You' : 'Orryx'}:</strong> {msg.text}
-          </div>
-        ))}
-        {loading && <div className="message orryx">Orryx is thinking...</div>}
-      </div>
-      <form onSubmit={handleSubmit} className="input-form">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask me something..."
-        />
-        <button type="submit">Send</button>
-      </form>
+    <div className="app">
+      <h1>Welcome to the Poway Chamber</h1>
+      <p>This is the main site content. Scroll, click, explore — but if you need help, Orryx is here 👉</p>
+
+      <ChatWidget /> {/* ✅ Floating widget rendered here */}
     </div>
   )
 }
