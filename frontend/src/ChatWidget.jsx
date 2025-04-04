@@ -47,6 +47,28 @@ function ChatWidget({ client }) {
       setIsOpen(false)
     }
   }
+  // 🆕 [REPORT FEATURE] report handler
+  const handleReport = async (userMessage, botReply) => {
+    const comment = prompt("Optional: Add a note about what went wrong.")
+    const reportData = {
+        user_message: userMessage,
+        bot_reply: botReply,
+        comment: comment || ""
+      }
+      
+    try {
+        await fetch(`http://127.0.0.1:8000/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reportData)
+      })
+      alert("Report submitted. We'll review it shortly.")
+    } catch (err) {
+      console.error("Failed to send report:", err)
+      alert("Something went wrong. Try again later.")
+    }
+  }
+
 
   // Smart greeting
   useEffect(() => {
@@ -131,8 +153,7 @@ function ChatWidget({ client }) {
               <p className="splash-text">Initializing Orryx</p>
               <div className="orryx-footer">
                 Powered by <span className="orryx-brand">Orryx</span>
-                </div>
-
+              </div>
             </div>
           ) : (
             <>
@@ -141,10 +162,20 @@ function ChatWidget({ client }) {
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`message ${msg.sender}`}>
                     <strong>{msg.sender === 'user' ? 'You' : 'Orryx'}:</strong> {linkify(msg.text)}
+                    {/* 🆕 [REPORT FEATURE] button for bot messages */}
+                    {msg.sender === 'orryx' && idx > 0 && (
+                      <button
+                        className="report-button"
+                        onClick={() => handleReport(messages[idx - 1]?.text, msg.text)}
+                      >
+                        ⚠️ Report
+                      </button>
+                    )}
                   </div>
                 ))}
                 {loading && <div className="message orryx">Orryx is thinking...</div>}
               </div>
+
               <form onSubmit={handleSubmit} className="input-form">
                 <input
                   value={input}
@@ -156,8 +187,7 @@ function ChatWidget({ client }) {
 
               <div className="orryx-footer">
                 Powered by <span className="orryx-brand">Orryx</span>
-                </div>
-
+              </div>
             </>
           )}
         </div>
