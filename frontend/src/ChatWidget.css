@@ -116,3 +116,187 @@
     word-break: break-word;
   }
   
+  .splash-screen {
+    position: fixed;
+    inset: 0;
+    background: #1b1107;
+    color: gold;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: fadeSplash 2.5s ease-in-out forwards;
+  }
+  
+  .splash-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 1rem;
+  }
+  
+  .splash-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    color: #d9b64f;
+    opacity: 0.85;
+    letter-spacing: 0.8px;
+    }
+  
+  @keyframes fadeSplash {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+  }
+  
+  .chat-splash {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 280px;
+    animation: fadeOutSplash 2.5s ease-in-out forwards;
+  }
+  
+  @keyframes fadeOutSplash {
+    0% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+  
+  .chat-splash-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    animation: fadeOutSplash 2.5s ease-in-out forwards;
+  }
+  
+  .chat-splash-content {
+    text-align: center;
+    opacity: 0;
+    animation: fadeInUp 0.4s ease-out forwards;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeOutSplash {
+    0% {
+      opacity: 1;
+      visibility: visible;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  
+  .splash-logo {
+    width: 90px;
+    margin-bottom: 14px;
+    animation: pulseLogo 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulseLogo {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.95;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+  }
+  
+  .splash-text {
+    color: #f0c95d;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .chat-splash {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+    animation: fadeInScale 0.3s ease-out;
+  }
+  
+  .chat-splash .splash-logo {
+    width: 160px;         /* 🔥 Go big */
+    max-width: 80%;
+    height: auto;
+    margin-bottom: 1rem;
+    animation: pulseGlow 2s infinite;
+  }
+    
+  .chat-splash .splash-text {
+    font-size: 1.1rem;
+    color: #d9b64f;
+    font-weight: 500;
+  }
+  
+  /* Optional: glowing pulse effect */
+  @keyframes pulseGlow {
+    0% {
+      filter: drop-shadow(0 0 0px #d9b64f);
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 10px #d9b64f);
+      transform: scale(1.05);
+    }
+    100% {
+      filter: drop-shadow(0 0 0px #d9b64f);
+      transform: scale(1);
+    }
+  }
+  
+  /* Optional: fade-in when widget opens */
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .orryx-footer {
+    text-align: center;
+    padding: 0.6rem 0;
+    font-size: 0.75rem;
+    color: #666;
+    border-top: 1px solid #2a2a2a;
+    background-color: #1e1e1e;
+    opacity: 0.7;
+  }
+  
+  .orryx-footer .orryx-brand {
+    color: #f0c95d;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+  }
+  
