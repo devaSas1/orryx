@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react' // ✅ NEW: useEffect for prompt bubble
 import './ChatWidget.css'
-import powayLogo from './assets/poway-logo.png'
 
 function linkify(text) {
     const urlRegex = /https?:\/\/[^\s<>()]+/g;
@@ -27,7 +26,8 @@ function linkify(text) {
   }
   
   
-function ChatWidget() {
+  function ChatWidget({ client }) {
+  const clientId = client.apiPath  
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -89,7 +89,8 @@ useEffect(() => {
     setLoading(true)
 
     try {
-      const res = await fetch('http://localhost:8000/chat', {
+      const res = await fetch(`http://127.0.0.1:8000/chat/${clientId}`, {
+
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input })
@@ -120,8 +121,8 @@ useEffect(() => {
       </button>
 
       {isOpen && (
-        <div className="orryx-widget-window">
-          <img src={powayLogo} alt="Poway Chamber" className="logo" />
+        <div className="orryx-widget-window"style={{ borderColor: client.primaryColor }}>
+          <img src={client.logo} alt={client.name} className="logo" />
           <h1 className="title"></h1>
           <div className="chat-box">
             {messages.map((msg, idx) => (
