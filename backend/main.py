@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 # import openai  # ❌ OLD: No longer using raw openai
 import json
@@ -24,9 +24,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+"""
 # === Load Poway config ===
 with open("../clients/poway/config.json") as f:
     CLIENT_CONFIG = json.load(f)
+"""
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")  # ❌ OLD: Raw OpenAI SDK
 
@@ -44,8 +46,21 @@ import json
 from langchain.schema import Document
 from langchain.vectorstores import FAISS  # ✅ still using FAISS for retrieval
 
+# 🔁 Caches vectorstores per client
+VECTOR_CACHE = {}
 
+def load_dynamic_knowledge_base(raw_data):
+    docs = []
+    for item in raw_data:
+        question = item.get("question", "")
+        answer = item.get("answer", "")
+        if question and answer:
+            combined = f"{question} {answer}"
+            docs.append(Document(page_content=combined))
+    return docs
+"""
 
+# OLD DYNAMIC KNOWLEDGE BASE FUNCTION
 def load_dynamic_knowledge_base(path):
     with open(path, "r", encoding="utf-8") as f:
         print("🔍 Raw JSON content:", f.read())  # NEW
@@ -61,13 +76,21 @@ def load_dynamic_knowledge_base(path):
             docs.append(Document(page_content=combined))
     return docs
 
+    
+"""
 
+
+
+"""
+# OLD. IGNORE THIS
 documents = load_dynamic_knowledge_base("../clients/poway/data/poway_knowledge_base_structured.json")
 
 for i, doc in enumerate(documents):
     print(f"Doc {i+1} content:", doc.page_content[:200])  # Preview first 200 chars
 
 vectorstore = FAISS.from_documents(documents, embedding_model)
+
+"""
 
 
 # === Initialize LangChain-compatible LLM ===
@@ -104,55 +127,59 @@ Tone guide:
 """
 )
 
-qa_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    chain_type="stuff",
-    retriever=vectorstore.as_retriever(),
-    chain_type_kwargs={
-        "prompt": prompt_template.partial(
-            client_name=CLIENT_CONFIG["client_name"],
-            fallback_message=CLIENT_CONFIG["fallback_message"]
-        )
-    }
-)
 
 class Message(BaseModel):
     message: str
 
-@app.post("/chat")
-async def chat(msg: Message):
+@app.post("/chat/{client_id}")
+async def chat(client_id: str, msg: Message):
     user_msg = msg.message
 
     # Optional system prompt for branding/personality (currently unused in RetrievalQA chain)
-    system_prompt = f"""
-    You are an AI assistant named Orryx, built for the {CLIENT_CONFIG['client_name']}.
-    Your job is to answer user questions in a helpful, friendly, and accurate tone.
-    Brand colors are {CLIENT_CONFIG['primary_color']} and {CLIENT_CONFIG['accent_color']}.
-    If you don’t know the answer, use this fallback message:
-    '{CLIENT_CONFIG['fallback_message']}'
-    """
-
     try:
-        # ❌ OLD: Raw GPT call
-        # res = openai.ChatCompletion.create(
-        #     model="gpt-3.5-turbo",
-        #     messages=[
-        #         {"role": "system", "content": system_prompt},
-        #         {"role": "user", "content": user_msg}
-        #     ]
-        # )
-        # return {"reply": res['choices'][0]['message']['content']}
+        # === Dynamic paths ===
+        client_dir = f"../clients/{client_id}"
+        config_path = os.path.join(client_dir, "config.json")
+        kb_path = os.path.join(client_dir, "data", f"{client_id}_knowledge_base_structured.json")
 
-        # ✅ NEW: LangChain QA chain
-        # 🔍 Debug: Test vectorstore retrieval
+        with open(config_path, "r") as f:
+            client_config = json.load(f)
+
+        with open(kb_path, "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
+
+        # === Vectorstore cache ===
+        if client_id not in VECTOR_CACHE:
+            print(f"🔧 Generating new vectorstore for '{client_id}'")
+            documents = load_dynamic_knowledge_base(raw_data)
+            VECTOR_CACHE[client_id] = FAISS.from_documents(documents, OpenAIEmbeddings())
+        vectorstore = VECTOR_CACHE[client_id]
+
+        # === QA Chain setup ===
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=ChatOpenAI(
+                model_name="gpt-3.5-turbo",
+                temperature=0.4,
+                openai_api_key=os.getenv("OPENAI_API_KEY")
+            ),
+            chain_type="stuff",
+            retriever=vectorstore.as_retriever(),
+            chain_type_kwargs={
+                "prompt": prompt_template.partial(
+                    client_name=client_config["client_name"],
+                    fallback_message=client_config["fallback_message"]
+                )
+            }
+        )
+
+        # 🔍 Optional debug
         docs = vectorstore.similarity_search(user_msg)
-        print("\n🔍 Retrieved Docs:")
+        print(f"\n🔍 Retrieved Docs for '{client_id}':")
         for i, doc in enumerate(docs):
-            print(f"--- Chunk {i+1} ---")
-            print(doc.page_content[:300])
-            print()
+            print(f"--- Chunk {i+1} ---\n{doc.page_content[:300]}\n")
 
         response = qa_chain.run(user_msg)
         return {"reply": response}
+
     except Exception as e:
-        return {"reply": f"{CLIENT_CONFIG['fallback_message']} (Error: {str(e)})"}
+        return {"reply": f"{client_config.get('fallback_message', 'Something went wrong.')} (Error: {str(e)})"}
